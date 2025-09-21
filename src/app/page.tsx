@@ -4,6 +4,7 @@ import { Vortex } from "@/components/ui/vortex";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { TvMinimalPlay } from "lucide-react";
 
 export default function HomePage() {
   return (
@@ -19,17 +20,19 @@ export default function HomePage() {
           height={200}
           className="mx-auto mb-4"
         ></Image>
-        <h2 className="text-white text-2xl md:text-3xl font-bold text-center">
+        <h2 className="text-white text-3xl md:text-5xl font-bold font-bebas text-center">
           Kira - Interactive Avatar
         </h2>
-        <p className="text-white text-sm md:text-lg max-w-xl mt-3 text-center">
+        <p className="text-white font-roboto text-sm md:text-lg max-w-xl mt-3 text-center">
           IA en Acción, de promesa a realidad.
         </p>
         <div className="flex flex-col sm:flex-row items-center gap-4 mt-6">
           <Link
             href={"/dashboard"}
           >
-            <Button variant="outline">Demo</Button>
+            <Button variant="outline" size="lg">
+              <TvMinimalPlay/>Demo
+            </Button>
           </Link>
         </div>
       </Vortex>

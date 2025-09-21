@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Bebas_Neue, Roboto_Condensed } from "next/font/google";
 import "./globals.css";
+import { ThemeProvider } from "@/components/theme-provider";
 
 // Importamos las fuentes
 const bebasNeue = Bebas_Neue({
@@ -27,10 +28,18 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      className={`dark ${robotoCondensed.variable} ${bebasNeue.variable}`}
+      suppressHydrationWarning
+      className={`${robotoCondensed.variable} ${bebasNeue.variable}`}
     >
       <body className="font-roboto font-r antialiased overflow-hidden">
-        {children}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

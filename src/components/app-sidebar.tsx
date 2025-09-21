@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import {
+  AudioLines,
   AudioWaveform,
   BookOpen,
   Bot,
@@ -12,6 +13,8 @@ import {
   PieChart,
   Settings2,
   SquareTerminal,
+  UserSquare,
+  Voicemail,
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
@@ -29,8 +32,8 @@ import {
 // This is sample data.
 const data = {
   user: {
-    name: "shadcn",
-    email: "m@example.com",
+    name: "Luis Pardo",
+    email: "luis.pardo@kognia.io",
     avatar: "/avatars/shadcn.jpg",
   },
   teams: [
@@ -58,63 +61,63 @@ const data = {
       isActive: true,
       items: [
         {
-          title: "Alan Customer Experience",
-          url: "/dashboard/playground/kira",
+          title: "Kira - Interactive Avatar",
+          url: "/dashboard/kira",
         },
-        {
-          title: "Alan Process Inteligence",
-          url: "#",
-        },
-        {
-          title: "Alan General Propuse",
-          url: "#",
-        },
+        // {
+        //   title: "Alan Process Inteligence",
+        //   url: "#",
+        // },
+        // {
+        //   title: "Alan General Propuse",
+        //   url: "#",
+        // },
       ],
     },
     {
-      title: "Models",
+      title: "Modelos",
       url: "#",
       icon: Bot,
       items: [
         {
-          title: "Genesis",
+          title: "OpenAI",
           url: "#",
         },
         {
-          title: "Explorer",
+          title: "Google Gemini",
           url: "#",
         },
         {
-          title: "Quantum",
+          title: "Azure OpenAI",
           url: "#",
         },
       ],
     },
+    // {
+    //   title: "Documentation",
+    //   url: "#",
+    //   icon: BookOpen,
+    //   items: [
+    //     {
+    //       title: "Introduction",
+    //       url: "#",
+    //     },
+    //     {
+    //       title: "Get Started",
+    //       url: "#",
+    //     },
+    //     {
+    //       title: "Tutorials",
+    //       url: "#",
+    //     },
+    //     {
+    //       title: "Changelog",
+    //       url: "#",
+    //     },
+    //   ],
+    // },
     {
-      title: "Documentation",
-      url: "#",
-      icon: BookOpen,
-      items: [
-        {
-          title: "Introduction",
-          url: "#",
-        },
-        {
-          title: "Get Started",
-          url: "#",
-        },
-        {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Settings",
+      title: "Ajustes",
       url: "#",
       icon: Settings2,
       items: [
@@ -123,15 +126,15 @@ const data = {
           url: "#",
         },
         {
-          title: "Team",
+          title: "Equipo",
           url: "#",
         },
         {
-          title: "Billing",
+          title: "Facturación",
           url: "#",
         },
         {
-          title: "Limits",
+          title: "Limites",
           url: "#",
         },
       ],
@@ -139,20 +142,20 @@ const data = {
   ],
   projects: [
     {
-      name: "Design Engineering",
+      name: "CX Insights",
       url: "#",
-      icon: Frame,
+      icon: AudioLines,
     },
     {
-      name: "Sales & Marketing",
+      name: "Voxi",
       url: "#",
-      icon: PieChart,
+      icon: Voicemail,
     },
-    {
-      name: "Travel",
-      url: "#",
-      icon: Map,
-    },
+    // {
+    //   name: "Travel",
+    //   url: "#",
+    //   icon: Map,
+    // },
   ],
 }
 
@@ -163,7 +166,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <TeamSwitcher teams={data.teams} />
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain title="Alan Customer Experience" items={data.navMain} />
         <NavProjects projects={data.projects} />
       </SidebarContent>
       <SidebarFooter>

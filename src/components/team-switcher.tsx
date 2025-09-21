@@ -34,13 +34,23 @@ export function TeamSwitcher({
 
   if (!activeTeam) {
     return (
-      <Image
-        src="/beyond/beyond-dark.png"
-        alt="Kognia Systems Logo"
-        width={140}
-        height={100}
-        className="my-4 ml-2"
-      ></Image>
+      <div>
+        <Image
+          src="/beyond/beyond-dark.png"
+          alt="Kognia Systems Logo"
+          width={140}
+          height={26}
+          className="my-4 ml-2 hidden dark:block"
+        />
+        <Image
+          src="/beyond/beyond-light.png"
+          alt="Kognia Systems Logo"
+          width={140}
+          height={26}
+          className="my-4 ml-2 dark:hidden"
+        />
+
+      </div>
     );
   }
 
