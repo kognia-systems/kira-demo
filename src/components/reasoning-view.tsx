@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import {
   ReactFlow,
   Background,
@@ -15,7 +15,12 @@ import { nodeTypes } from "@/lib/node-types";
 import { useTheme } from "next-themes";
 import { ModeToggle } from "./mode-toggle";
 import { Badge } from "./ui/badge";
-import { Wifi } from "lucide-react";
+import { Loader, Wifi, WifiOff } from "lucide-react";
+import { useConnectionQuality } from "./streaming-avatar/useConnectionQuality";
+import { useStreamingAvatarSession } from "./streaming-avatar/useStreamingAvatarSession";
+import { StreamingAvatarSessionState } from "./streaming-avatar/interfaces";
+import { useConversationState } from "./streaming-avatar/useConversationState";
+import { useStreamingAvatarContext } from "./streaming-avatar/streamingAvatarContext";
 
 const nodeDefaults = {
   sourcePosition: Position.Bottom,
@@ -26,13 +31,12 @@ const initialNodes = [
   {
     id: "1",
     position: { x: 0, y: 0 },
-    data: { label: "Agent Node" },
+    data: { label: "KIRA" },
     ...nodeDefaults,
   },
   {
     id: "2",
     position: { x: 0, y: 100 },
-    // type: "textUpdater",
     data: { label: "Detect Intent" },
     ...nodeDefaults,
   },
@@ -59,7 +63,7 @@ const initialNodes = [
   {
     id: "T",
     type: "group",
-    data: { label: "Tools"},
+    data: { label: "Tools" },
     position: { x: 250, y: 150 },
     style: {
       width: 170,
@@ -134,10 +138,76 @@ const initialEdges = [
 ];
 
 export default function ReasoningView() {
-  const { theme, systemTheme } = useTheme();
+  const { theme } = useTheme();
+  const { sessionState } = useStreamingAvatarContext();
 
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+
+  const updateNodeLabel = useCallback(
+    (nodeId: string, label: string) => {
+      setNodes((prev) =>
+        prev.map((node) => {
+          if (node.id === nodeId) {
+            return {
+              ...node,
+              data: {
+                ...node.data,
+                label,
+              },
+            };
+          }
+          return node;
+        })
+      );
+    },
+    [setNodes]
+  );
+
+  const updateEdge = useCallback(
+    (edgeId: string, animated: boolean) => {
+      setNodes((prev) =>
+        prev.map((edge) => {
+          if (edge.id === edgeId) {
+            return {
+              ...edge,
+              animated: animated,
+            };
+          }
+          return edge;
+        })
+      );
+    },
+    [setEdges]
+  );
+
+  const getConnectionState = () => {
+    switch (sessionState) {
+      case StreamingAvatarSessionState.CONNECTED:
+        return (
+          <Badge variant="default" className="bg-green-500 text-white ">
+            <Wifi />
+            Conectado
+          </Badge>
+        );
+      case StreamingAvatarSessionState.CONNECTING:
+        return (
+          <Badge variant="default" className="bg-blue-500 text-white ">
+            <Loader className="animate-spin" />
+            Conectando...
+          </Badge>
+        );
+      case StreamingAvatarSessionState.INACTIVE:
+        return (
+          <Badge variant="secondary" className=" text-white ">
+            <WifiOff />
+            Inactivo
+          </Badge>
+        );
+      default:
+        return "Esperando";
+    }
+  };
 
   const onConnect = useCallback(
     (params) => setEdges((els) => addEdge(params, els)),
@@ -159,15 +229,7 @@ export default function ReasoningView() {
       >
         <Background />
         <Controls />
-        <Panel position="top-left">
-          <Badge
-            variant="secondary"
-            className="bg-blue-500 text-white dark:bg-green-600"
-          >
-            <Wifi />
-            Connected
-          </Badge>
-        </Panel>
+        <Panel position="top-left">{getConnectionState()}</Panel>
         <Panel position="top-right">
           <ModeToggle />
         </Panel>
