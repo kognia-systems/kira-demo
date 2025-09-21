@@ -22,6 +22,7 @@ import {
   VoiceChatTransport,
   VoiceEmotion,
 } from "@heygen/streaming-avatar";
+import { MessageHistory } from "@/components/message-history";
 
 // Base de datos mock de transacciones para KIRA
 const transactionDatabase = [
@@ -252,30 +253,32 @@ export default function PlaygroundPage() {
                     className="h-full w-full m-0 p-0"
                     style={{ height: "100%" }}
                   >
-                    <div className="h-full w-full bg-amber-500 border rounded-lg">
-                      <ResizablePanelGroup direction="horizontal">
-                        <ResizablePanel defaultSize={70}>
-                          <div className="bg-secondary h-full flex items-center justify-center">
+                    <div className="h-full w-full border rounded-lg p-4 bg-black/10">
+                      <MessageHistory />
+
+                      {/* <ResizablePanelGroup direction="horizontal">
+                        <ResizablePanel defaultSize={60}>
+                          <div className="h-full flex items-center justify-center">
                             History Chat
                           </div>
                         </ResizablePanel>
                         <ResizableHandle withHandle />
-                        <ResizablePanel defaultSize={30} minSize={30}>
-                          <ResizablePanelGroup direction="horizontal">
+                        <ResizablePanel defaultSize={40} minSize={40}>
+                          <ResizablePanelGroup direction="vertical">
                             <ResizablePanel defaultSize={30} minSize={30}>
-                              <div className="bg-secondary h-full flex items-center justify-center">
+                              <div className="h-full flex items-center justify-center">
                                 Chart Donut
                               </div>
                             </ResizablePanel>
                             <ResizableHandle withHandle />
                             <ResizablePanel defaultSize={70}>
-                              <div className="bg-secondary h-full flex items-center justify-center">
+                              <div className="h-full flex items-center justify-center">
                                 Chart Line
                               </div>
                             </ResizablePanel>
                           </ResizablePanelGroup>
                         </ResizablePanel>
-                      </ResizablePanelGroup>
+                      </ResizablePanelGroup> */}
                     </div>
                   </TabsContent>
 
@@ -284,8 +287,10 @@ export default function PlaygroundPage() {
                     className="h-full w-full m-0 p-0"
                     style={{ height: "100%" }}
                   >
-                    <div className="h-full w-full bg-green-500 border rounded-lg">
-                      Sentiment Score.
+                    <div className="h-full w-full border rounded-lg p-4 bg-muted dark:bg-card">
+                      <div className="bg-white dark:bg-muted border mx-auto h-full w-full max-w-2xl rounded-xl">
+                        <MessageHistory />
+                      </div>
                     </div>
                   </TabsContent>
                 </div>
