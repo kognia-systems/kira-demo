@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Bebas_Neue, Roboto_Condensed } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "@/components/ui/sonner";
 
 // Importamos las fuentes
 const bebasNeue = Bebas_Neue({
@@ -40,6 +41,7 @@ export default function RootLayout({
         >
           {children}
         </ThemeProvider>
+        <Toaster />
       </body>
     </html>
   );

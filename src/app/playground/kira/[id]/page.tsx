@@ -13,7 +13,7 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
 import { InteractiveAvatarSDK } from "@/components/interactive-avatar-sdk";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   AvatarQuality,
   ElevenLabsModel,
@@ -23,6 +23,22 @@ import {
   VoiceEmotion,
 } from "@heygen/streaming-avatar";
 import { MessageHistory } from "@/components/message-history";
+import { SettingsForm } from "@/components/settings-form";
+import { HeyGenConfigModel } from "@/app/api/interfaces/heygen-config-model";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  updateDoc,
+  where,
+  writeBatch,
+} from "firebase/firestore";
+import { db } from "@/lib/firebase";
+import { Channel } from "@/app/api/interfaces/channel";
+import { toast } from "sonner";
+import { useParams } from "next/navigation";
 
 // Base de datos mock de transacciones para KIRA
 const transactionDatabase = [
@@ -159,7 +175,141 @@ Formato de Respuesta:
 };
 
 export default function PlaygroundPage() {
+  const params = useParams();
+  const avatarId = params.id as string;
+
+  const [heygenConfigId, setHeygenConfigId] = useState("8gdjlezBB59RW4yqGqwI");
+  const [isLoading, setLoading] = useState(false);
+
   const [config, setConfig] = useState<StartAvatarRequest>(DEFAULT_CONFIG);
+  const [heygenConfig, setHeygenConfig] = useState<HeyGenConfigModel>();
+
+  // Load Avatar
+  async function fetchChannelByAvatarId(id: string): Promise<Channel> {
+    try {
+      const channelRef = collection(db, "channels");
+      const docSnap = await getDocs(
+        query(channelRef, where("agentId", "==", avatarId))
+      );
+
+      if (!docSnap.empty) {
+        const channel = docSnap.docs[0].data() as Channel;
+        return channel;
+      } else {
+        throw new Error("Configuración no encontrada");
+      }
+    } catch (error) {
+      console.error("Error obteniendo el channel: ", error);
+      throw error;
+    }
+  }
+
+  async function fetchHeygenConfigById(id: string): Promise<HeyGenConfigModel> {
+    try {
+      const docRef = doc(db, "heygen-configs", id);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        return docSnap.data() as HeyGenConfigModel;
+      } else {
+        throw new Error("Documento no encontrado");
+      }
+    } catch (error) {
+      console.error("Error obteniendo config: ", error);
+      throw error;
+    }
+  }
+
+  const onUpdate = async (e: React.FormEvent, config: HeyGenConfigModel) => {
+    e.preventDefault();
+    setLoading(true);
+    
+    try {
+ 
+      // 1. documento en heygen-configs
+      const heygenRef = doc(db, "heygen-configs", heygenConfigId);
+
+      console.log(heygenConfigId);
+      console.log(config);
+      
+
+      await updateDoc(heygenRef, {
+        avatarId: config.avatarId,
+        knowledgeBase: config.knowledgeBase,
+        voiceId: config.voiceId,
+        voiceEmotion: config.voiceEmotion,
+        elevenlabsModel: config.elevenlabsModel,
+      });
+      
+      setConfig({
+        quality: AvatarQuality.High,
+        avatarName: config.avatarId,
+        useSilencePrompt: true,
+        knowledgeBase: config.knowledgeBase,
+        voice: {
+          voiceId: config.voiceId,
+          rate: 1,
+          emotion: config.voiceEmotion,
+          model: config.elevenlabsModel,
+        },
+        language: "es",
+        voiceChatTransport: VoiceChatTransport.WEBSOCKET,
+        sttSettings: {
+          provider: STTProvider.DEEPGRAM,
+        },
+      });
+      
+      toast.success("Configuración guardada!", {
+        description: "La configuración se guardó correctamente!",
+        className: "bg-green-500 text-white",
+      });
+    } catch (err) {
+      console.log(err);
+      toast.error("Error", {
+        description: "La configuración no se pudo guardar",
+        className: "bg-red-500 text-white",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const channel = await fetchChannelByAvatarId(avatarId);
+        setHeygenConfigId(channel.configId);
+
+        const conf = await fetchHeygenConfigById(channel.configId);
+        setHeygenConfig(conf);
+
+        setConfig({
+          quality: AvatarQuality.Low,
+          avatarName: conf.avatarId,
+          knowledgeBase: `${conf.knowledgeBase} ${JSON.stringify(
+            transactionDatabase,
+            null,
+            2
+          )}`,
+          voice: {
+            rate: 1,
+            voiceId: conf.voiceId,
+            emotion: conf.voiceEmotion,
+            model: conf.elevenlabsModel,
+          },
+          language: "es",
+          voiceChatTransport: conf.voiceChatTransport,
+          sttSettings: {
+            provider: conf.sttProvider,
+          },
+        });
+        toast.success("Informacion cargada");
+      } catch (err) {
+        toast.error("No se pudo cargar la informacion");
+      }
+    }
+    if(avatarId) loadData();
+  }, []);
 
   return (
     <div className="h-screen flex bg-dark-blue">
@@ -255,30 +405,6 @@ export default function PlaygroundPage() {
                   >
                     <div className="h-full w-full border rounded-lg p-4 bg-black/10">
                       <MessageHistory />
-
-                      {/* <ResizablePanelGroup direction="horizontal">
-                        <ResizablePanel defaultSize={60}>
-                          <div className="h-full flex items-center justify-center">
-                            History Chat
-                          </div>
-                        </ResizablePanel>
-                        <ResizableHandle withHandle />
-                        <ResizablePanel defaultSize={40} minSize={40}>
-                          <ResizablePanelGroup direction="vertical">
-                            <ResizablePanel defaultSize={30} minSize={30}>
-                              <div className="h-full flex items-center justify-center">
-                                Chart Donut
-                              </div>
-                            </ResizablePanel>
-                            <ResizableHandle withHandle />
-                            <ResizablePanel defaultSize={70}>
-                              <div className="h-full flex items-center justify-center">
-                                Chart Line
-                              </div>
-                            </ResizablePanel>
-                          </ResizablePanelGroup>
-                        </ResizablePanel>
-                      </ResizablePanelGroup> */}
                     </div>
                   </TabsContent>
 
@@ -288,9 +414,11 @@ export default function PlaygroundPage() {
                     style={{ height: "100%" }}
                   >
                     <div className="h-full w-full border rounded-lg p-4 bg-muted dark:bg-card">
-                      <div className="bg-white dark:bg-muted border mx-auto h-full w-full max-w-2xl rounded-xl">
-                        <MessageHistory />
-                      </div>
+                      <SettingsForm
+                        config={heygenConfig!}
+                        onConfigChange={onUpdate}
+                        isLoading={isLoading}
+                      />
                     </div>
                   </TabsContent>
                 </div>

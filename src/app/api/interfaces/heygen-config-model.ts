@@ -7,7 +7,7 @@ export interface HeyGenConfigModel {
     voiceId: string;
     voiceEmotion: VoiceEmotion;
     elevenlabsModel: ElevenLabsModel;
-    knowledgeId: string;
+    knowledgeBase: string;
     language: string;
     sttProvider: STTProvider;
     voiceChatTransport: VoiceChatTransport;

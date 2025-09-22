@@ -1,8 +1,8 @@
 import React, { useEffect, useRef } from "react";
 import { useMessageHistory } from "./streaming-avatar/useMessageHistory";
-import { Message, MessageSender } from "./streaming-avatar/interfaces";
+import { MessageSender } from "./streaming-avatar/interfaces";
 import { AnimatePresence, motion } from "framer-motion";
-import { User, MessageSquareMoreIcon, BotMessageSquare } from "lucide-react";
+import { User, BotMessageSquare } from "lucide-react";
 import { TextInput } from "./ui/text-input";
 
 export const MessageHistory: React.FC = () => {
